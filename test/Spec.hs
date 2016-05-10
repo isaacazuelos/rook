@@ -1,2 +1,8 @@
+import Test.Hspec
+
+import qualified MaskSpec
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = hspec $
+  describe "Rook" $
+    describe "Mask" MaskSpec.spec
