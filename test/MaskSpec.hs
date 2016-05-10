@@ -23,7 +23,7 @@ spec = do
       Mask.fromCoords [] `shouldBe` Mask.empty
     it "should properly add coords from the list" $ do
       Mask.fromCoords [Coord.a1, Coord.f7] `shouldBe`
-        Mask.fromWord (Coord.toWord Coord.a1 .&. Coord.toWord Coord.f7)
+        Mask.fromWord (Coord.toWord Coord.a1 .|. Coord.toWord Coord.f7)
       Mask.fromCoords Coord.allCoords `shouldBe`
         Mask.fromWord (complement zeroBits)
     it "should produce a full mask when given all coords" $
@@ -51,7 +51,7 @@ spec = do
     it "should propertly find the intersection" $ do
       let m1 = Mask.fromCoords [Coord.a1, Coord.c4, Coord.f6]
       let m2 = Mask.fromCoords [Coord.c4, Coord.b7, Coord.f5]
-      let expected = Mask.fromCoords [Coord.c4]
+      let expected = Mask.fromCoords [ Coord.c4 ]
       Mask.intersection m1 m2 `shouldBe` expected
 
   describe "union" $ do
@@ -62,7 +62,7 @@ spec = do
       let m2 = Mask.fromCoords [Coord.c4, Coord.b7, Coord.f5]
       let expected = Mask.fromCoords [ Coord.a1, Coord.c4, Coord.f6
                                      , Coord.c4, Coord.b7, Coord.f5 ]
-      Mask.intersection m1 m2 `shouldBe` expected
+      Mask.union m1 m2 `shouldBe` expected
 
   describe "invert" $ do
     it "should invert full to empty" $
