@@ -14,7 +14,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Game.Rook.Mask
+  exposed-modules:     Game.Rook.Coord
+                     , Game.Rook.Mask
   build-depends:       base >= 4.7 && < 5
   ghc-options:         -Wall
   default-language:    Haskell2010
@@ -30,6 +31,8 @@ executable rook
 test-suite test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
+  other-modules:       CoordSpec
+                     , MaskSpec
   main-is:             Spec.hs
   build-depends:       base
                      , rook
