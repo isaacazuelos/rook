@@ -9,23 +9,24 @@
 module Game.Rook.Board
     ( Board
     , material
-    , blank
+    , empty
     , starting
     , get
     , set
     )
   where
 
-import Game.Rook.Piece
-import qualified Game.Rook.Mask as Mask
+import           Game.Rook.Piece
 
-data Board = Board
+import qualified Game.Rook.Mask  as Mask
+
+data Board = Board deriving (Show, Eq)
 
 material :: Board -> Colour -> Mask.Mask
 material = undefined
 
-blank :: Board
-blank = undefined
+empty :: Board
+empty = undefined
 
 starting :: Board
 starting = undefined
