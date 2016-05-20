@@ -27,8 +27,11 @@ spec = do
       Board.get Board.starting White Pawn `shouldBe` file2
   describe "set" $ do
     it "should set where a type of piece are." $
-      property (\ m -> let newBoard = Board.set Board.empty White Pawn m in
-        Board.material newBoard White `shouldBe` m)
+      property (\ m -> let newBoard = Board.set Board.empty White Pawn m in do
+        Board.material newBoard White  `shouldBe` m
+        Board.get newBoard White Pawn  `shouldBe` m
+        Board.get newBoard Black Pawn  `shouldBe` Mask.empty
+        Board.get newBoard White Queen `shouldBe` Mask.empty)
     it "should remove pieces of other types when overwriting" $
       property $ \ m -> do
         let board1 = Board.set Board.empty White Pawn m
