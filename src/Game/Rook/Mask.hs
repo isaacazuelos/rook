@@ -7,8 +7,7 @@
 -- A mask is a  representation for what can be thought of as a set of `Coord`s.
 
 module Game.Rook.Mask
-    (
-      Mask
+    ( Mask
     , empty
     , full
     -- * Contruction
@@ -29,6 +28,8 @@ import           Data.Word       (Word64)
 
 import qualified Game.Rook.Coord as Coord
 
+-- | A mask tracks some of the squares on a board. It's a way to refer to a set
+-- of coordinates.
 newtype Mask = Mask Word64 deriving (Eq)
 
 instance Show Mask where

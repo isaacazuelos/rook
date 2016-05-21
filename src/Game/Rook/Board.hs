@@ -4,7 +4,9 @@
 -- License     : MIT License
 -- Maintainer  : Isaac Azuelos
 --
--- This is a raw board, with no other game state information.
+-- This is a chess board, with no other game state information. It contains no
+-- other information about the state of a normal chess game, like the en-passant
+-- state, or the availability of castling, or the status of the 50 move rule.
 
 module Game.Rook.Board
     ( Board
@@ -21,6 +23,8 @@ import           Game.Rook.Coord
 
 import qualified Game.Rook.Mask  as Mask
 
+-- | A chess board. This is just the board itself, with no information about the
+-- state of a game.
 data Board =
   Board
     { king   :: Mask.Mask
@@ -34,13 +38,16 @@ data Board =
     }
   deriving (Show, Eq)
 
+-- | All of the locations where a colour has pieces.
 material :: Board -> Colour -> Mask.Mask
 material b White = white b
 material b Black = black b
 
+-- | A board with no pieces on it.
 empty :: Board
 empty = let e = Mask.empty in Board e e e e e e e e
 
+-- | A board in the usual starting position.
 starting :: Board
 starting = let c = Mask.fromCoords in Board
   { king   = c [e1, e8]
@@ -53,6 +60,7 @@ starting = let c = Mask.fromCoords in Board
   , black  = c [a7, b7, c7, d7, e7, f7, g7, h7, a8, b8, c8, d8, e8, f8, g8, h8]
   }
 
+-- | Get a `Mask.Mask` indicating where pieces of a colour are.
 get :: Board -> Colour -> Piece -> Mask.Mask
 get b c King   = Mask.intersection (material b c) (king b)
 get b c Queen  = Mask.intersection (material b c) (queen b)
@@ -61,6 +69,7 @@ get b c Knight = Mask.intersection (material b c) (knight b)
 get b c Bishop = Mask.intersection (material b c) (bishop b)
 get b c Pawn   = Mask.intersection (material b c) (pawn b)
 
+-- | Makes all the squares on the mask blank.
 setToBlank :: Board -> Mask.Mask -> Board
 setToBlank b m = Board
   { king   = king   b `Mask.remove` m
@@ -73,6 +82,8 @@ setToBlank b m = Board
   , black  = black  b `Mask.remove` m
   }
 
+-- | Set the positions of a particular piece of a colour. This will overwrite
+-- any pieces already at the locations indicated in the `Mask.Mask`.
 set :: Board -> Colour -> Piece -> Mask.Mask -> Board
 set b c p m = case p of
     King   -> updatedMaterial { king   = king   updatedMaterial `Mask.union` m }
