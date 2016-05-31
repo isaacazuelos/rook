@@ -36,6 +36,8 @@ test-suite test
   hs-source-dirs:      test
   other-modules:       CoordSpec
                      , MaskSpec
+                     , BoardSpec
+                     , GameSpec
   main-is:             Spec.hs
   build-depends:       base
                      , rook

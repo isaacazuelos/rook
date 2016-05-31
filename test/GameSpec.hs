@@ -22,7 +22,7 @@ spec = do
       Game.castlingOption Game.empty White Queenside `shouldBe` False
       Game.castlingOption Game.empty Black Kingside  `shouldBe` False
       Game.castlingOption Game.empty Black Queenside `shouldBe` False
-    it "has no fifty move rule status" $
+    it "is zero moves into the fifty move rule" $
       Game.fiftyMoveStatus Game.empty `shouldBe` 0
     it "has no enPassant square set" $
       Game.enPassantOption Game.empty `shouldBe` Nothing
@@ -37,7 +37,7 @@ spec = do
       Game.castlingOption Game.starting White Queenside `shouldBe` True
       Game.castlingOption Game.starting Black Kingside  `shouldBe` True
       Game.castlingOption Game.starting Black Queenside `shouldBe` True
-    it "has no fifty move rule status" $
+    it "is zero moves into the fifty move rule" $
       Game.fiftyMoveStatus Game.starting `shouldBe` 0
     it "has no enPassant square set" $
       Game.enPassantOption Game.starting `shouldBe` Nothing
@@ -88,13 +88,13 @@ spec = do
       Game.fiftyMoveStatus (Game.setFiftyMoveStatus Game.empty 5) `shouldBe` 5
     it "should throw on inputs below 0" $ do
       let pureExpr = Game.setFiftyMoveStatus Game.empty (-123)
-      evaluate pureExpr `shouldThrow` (== Game.FiftyMoveException (-123))
+      evaluate pureExpr `shouldThrow` (== Game.TooLowException (-123))
     it "should accept 50 as a value to indicate a fifty-move-rule draw." $
       Game.fiftyMoveStatus (Game.setFiftyMoveStatus Game.empty 50) `shouldBe` 50
 
     it "should throw on inputs above 50" $ do
       let pureExpr = Game.setFiftyMoveStatus Game.empty 111
-      evaluate pureExpr `shouldThrow` (== Game.FiftyMoveException 111)
+      evaluate pureExpr `shouldThrow` (== Game.TooHighException 111)
 
   describe "enPassantOption" $ do
     it "should be the status" $ do
@@ -104,12 +104,14 @@ spec = do
     let rank3 = [a3, b3, c3, d3, e3, f3, g3, h3]
     let rank6 = [a6, b6, c6, d6, e6, f6, g6, h6]
     let accept = rank3 ++ rank6
-    let reject = filter (`elem` accept) allCoords
+    let reject = filter (`notElem` accept) allCoords
     it "should only accept the 3rd and 6th rank coords" $ do
       let result = Game.enPassantOption . Game.setEnPassantOption Game.empty
       let isAccepted = shouldBe =<< result
       mapM_ (isAccepted . Just) accept
     it "should throw on other ranks" $ do
+      -- Note `evaluate` does WHNF, since that might cause these tests to fail
+      -- if there are strictness changes.
       let result = evaluate . Game.setEnPassantOption Game.empty . Just
       let isRejected a = result a `shouldThrow` (== Game.EnPassantException a)
       mapM_ isRejected reject

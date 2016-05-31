@@ -7,6 +7,10 @@
 -- This is a chess board, with no other game state information. It contains no
 -- other information about the state of a normal chess game, like the en-passant
 -- state, or the availability of castling, or the status of the 50 move rule.
+-- For working with that information, use a `Game.Rook.Game.Game`.
+--
+-- Our Board is a collection of `Mask`s, one for each type of piece and colour.
+-- Each of these masks is kept strict.
 
 module Game.Rook.Board
     ( Board
@@ -27,14 +31,14 @@ import qualified Game.Rook.Mask  as Mask
 -- state of a game.
 data Board =
   Board
-    { king   :: Mask.Mask
-    , queen  :: Mask.Mask
-    , rook   :: Mask.Mask
-    , knight :: Mask.Mask
-    , bishop :: Mask.Mask
-    , pawn   :: Mask.Mask
-    , white  :: Mask.Mask
-    , black  :: Mask.Mask
+    { king   :: !Mask.Mask
+    , queen  :: !Mask.Mask
+    , rook   :: !Mask.Mask
+    , knight :: !Mask.Mask
+    , bishop :: !Mask.Mask
+    , pawn   :: !Mask.Mask
+    , white  :: !Mask.Mask
+    , black  :: !Mask.Mask
     }
   deriving (Show, Eq)
 
