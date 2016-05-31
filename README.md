@@ -31,6 +31,18 @@ This includes development stuff like dependency fetching and test running.
 
 There isn't anything usable yet.
 
+## Thanks
+
+* The [Chess Programming Wiki](https://chessprogramming.wikispaces.com)
+* [FIDE][rules] for a pretty great document outlining the rules.
+* [Chess.com](http://chess.com) for making me suck slightly less at the game.
+
+This is also a rewrite of a chess engine ([`SlowChess`][SlowChess]) I started
+back in 2014. At the time I was a student who didn't really *get* Monads. I
+had figured it would take me about a month.
+
+[SlowChess]: https://github.com/isaacazuelos/SlowChess
+
 ## License
 
 This project is [MIT][] Licensed. See the included `LICENSE` file.
