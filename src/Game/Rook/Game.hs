@@ -23,21 +23,20 @@
 -- So we'll need a total of 16 bits. That works out nicely!
 --
 -- We'll be using the following bitmask.
---  @
---  e = en Passant coord encoding
---  E = Is there an en Passant coord in the `e` bits?
---  W = White Kingside calste
---  w = White Queenside castle
---  B = Black Kingside castle
---  b = Black Queenside castle
---  t = Who's ply is it?
---  f = Fifty move rule status
 --
---    F E D C B A 9 8   7 6 5 4 3 2 1 0
---   +---------------+ +---------------+
---   |f|f|f|f|f|f|b|B| |w|W|t|E|e|e|e|e|
---   +---------------+ +---------------+
--- @
+--  > e = en Passant coord encoding
+--  > E = Is there an en Passant coord in the `e` bits?
+--  > W = White Kingside calste
+--  > w = White Queenside castle
+--  > B = Black Kingside castle
+--  > b = Black Queenside castle
+--  > t = Who's ply is it?
+--  > f = Fifty move rule status
+--  >
+--  >  F E D C B A 9 8   7 6 5 4 3 2 1 0
+--  > +---------------+ +---------------+
+--  > |f|f|f|f|f|f|b|B| |w|W|t|E|e|e|e|e|
+--  > +---------------+ +---------------+
 --
 -- Since we're using a single `Word16` for our flags, we're going to keep the
 -- the implementation completely strict, to save memory.
