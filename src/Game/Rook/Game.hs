@@ -16,7 +16,7 @@
 --    (4 bits)
 -- 3. Fifty move rule status, so a number between 0 and 50. We'll need to mask
 --    and shift to recover or set. (6 bits)
--- 4. En Passant coordinate, if any. There are only 16 possible values,
+-- 4. En passant coordinate, if any. There are only 16 possible values,
 --    but we need another flag to represent a non-option. Again, this is a
 --    number we'll need to mask and shift to recover.(4+1 bits)
 --
@@ -24,12 +24,12 @@
 --
 -- We'll be using the following bitmask.
 --
---  > e = en Passant coord encoding
+--  > e = En passant coord encoding
 --  > E = Is there an en Passant coord in the `e` bits?
---  > W = White Kingside calste
---  > w = White Queenside castle
---  > B = Black Kingside castle
---  > b = Black Queenside castle
+--  > W = White kingside castle
+--  > w = White queenside castle
+--  > B = Black kingside castle
+--  > b = Black queenside castle
 --  > t = Who's ply is it?
 --  > f = Fifty move rule status
 --  >
@@ -84,16 +84,16 @@ type Status = Word16
 -- | A `Game` is a chess board as well as all the supplementary information
 -- about the game, such as:
 --
--- 1. which colour's ply comes next.
--- 2. the remaining castling options.
--- 3. fifty move rule status.
--- 4. en Passant status.
+-- 1. Which colour's ply comes next
+-- 2. The remaining castling options
+-- 3. Fifty move rule status
+-- 4. En passant status
 data Game = Game !Board.Board !Status
   deriving (Show, Eq)
 
--- | `FiftyMoveException`s are thrown when an invalid fifty move rule state state
+-- | `FiftyMoveException`s are thrown when an invalid fifty move rule state
 -- would be created, either becuase the number of moves is over 50 and the game
--- must have drawn, or becuase a negative value was set.
+-- must have drawn, or because a negative value was set.
 data FiftyMoveException
   = TooLowException Int
   | TooHighException Int
@@ -106,7 +106,7 @@ instance Show FiftyMoveException where
 instance Exception FiftyMoveException
 
 -- | `EnPassantException` is thrown when an invalid coordinate is set. En
--- Passant moves can only happen on the 3rd and 6th rank.
+-- passant moves can only happen on the 3rd and 6th rank.
 data EnPassantException = EnPassantException Coord
   deriving (Typeable, Eq)
 
@@ -115,12 +115,12 @@ instance Show EnPassantException where
 
 instance Exception EnPassantException
 
--- | An empty game, with a blank board, White's turn, no castle options, zero on
--- the fifty move clock, and no en Passant square.
+-- | An empty game, with a blank board, white's turn, no castle options, zero on
+-- the fifty move clock, and no en passant square.
 empty :: Game
 empty = Game Board.empty 0
 
--- | A board with the typical starting positioins for chess.
+-- | A board with the typical starting positions for chess.
 starting :: Game
 starting = Game Board.starting 0b0000001111000000
 
@@ -194,7 +194,7 @@ setFiftyMoveStatus (Game b s) n
 enPassantBits :: Word16
 enPassantBits = 0b0000000000011111
 
--- | All the coords that en Passant moves can be placed on. Note that the order
+-- | All the coords that en passant moves can be placed on. Note that the order
 -- doesn't matter, since this list is used for both setting and getting the
 -- values.
 enPassantCoords :: [Coord]
