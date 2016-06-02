@@ -91,8 +91,8 @@ type Status = Word16
 data Game = Game !Board.Board !Status
   deriving (Show, Eq)
 
--- | `FiftyMoveException`s are thrown when an invalid fifty move rule state
--- would be created, either becuase the number of moves is over 50 and the game
+-- | `FiftyMoveException`s are thrown when an invalid 50 move rule state
+-- would be created, either because the number of moves is over 50 and the game
 -- must have drawn, or because a negative value was set.
 data FiftyMoveException
   = TooLowException Int
@@ -106,7 +106,7 @@ instance Show FiftyMoveException where
 instance Exception FiftyMoveException
 
 -- | `EnPassantException` is thrown when an invalid coordinate is set. En
--- passant moves can only happen on the 3rd and 6th rank.
+-- passant moves can only happen on the third and sixth rank.
 data EnPassantException = EnPassantException Coord
   deriving (Typeable, Eq)
 
@@ -141,7 +141,7 @@ setTurn :: Game -> Colour -> Game
 setTurn (Game b s) c = Game b s'
   where s' = (if c == Black then setBit else clearBit) s 0xA
 
--- | The bit indicies used for the different castle options.
+-- | The bit indices used for the different castle options.
 castleIndex :: Colour -> Side -> Int
 castleIndex White Kingside  = 0x6
 castleIndex White Queenside = 0x7
@@ -172,15 +172,15 @@ setCastlingOptions (Game b s) enabled = Game b s'
 -- they're numbers. So we need to mask them out, shift them to the LSB, and
 -- convert them to a proper `Int`.
 
--- | The bits used by the fifty move rule tracking.
+-- | The bits used by the 50 move rule tracking.
 fiftyMoveBits :: Word16
 fiftyMoveBits = 0b1111110000000000
 
--- | The fifty move rule status of the game.
+-- | The 50 move rule status of the game.
 fiftyMoveStatus :: Game -> Int
 fiftyMoveStatus (Game _ s) = fromIntegral $ shiftR (s .&. fiftyMoveBits) 10
 
--- | Set the fifty move rule status of the game. This will throw if the number
+-- | Set the 50 move rule status of the game. This will throw if the number
 -- isn't in the range @[0..50]@.
 setFiftyMoveStatus :: Game -> Int -> Game
 setFiftyMoveStatus (Game b s) n

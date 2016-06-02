@@ -40,7 +40,7 @@ instance Show Mask where
 fromWord :: Word64 -> Mask
 fromWord = Mask
 
--- | Turns a `Mask` into a `Word64`, using the numbering shceme outlined fromWord
+-- | Turns a `Mask` into a `Word64`, using the numbering scheme outlined fromWord
 -- `Coord.toWord`
 toWord :: Mask -> Word64
 toWord (Mask m) = m
