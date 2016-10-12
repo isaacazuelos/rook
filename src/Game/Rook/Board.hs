@@ -5,7 +5,7 @@
 -- Maintainer  : Isaac Azuelos
 --
 -- This is a chess board, with no other game state information. It contains no
--- other information about the state of a normal chess game, like the en-passant
+-- other information about the state of a normal chess game, like the en passant
 -- state, or the availability of castling, or the status of the 50 move rule.
 -- For working with that information, use a `Game.Rook.Game.Game`.
 --

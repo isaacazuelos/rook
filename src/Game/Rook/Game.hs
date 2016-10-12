@@ -9,14 +9,22 @@
 -- This is our game representation. It's a `Board.Board` paired with some bits
 -- to encode other status flags.
 --
+-- A quick note on terminology, in chess there are two players assigned the
+-- colours white and black who alternate (starting with white) changeing the
+-- state of the board according to the rules. The problem here is that these
+-- board state changes are called many different things in different contexts.
+-- I'm going to call these a ply. Two plys (one by white then one by black) are
+-- move, sometimes called a full move. A half move is a ply. Turn is used to
+-- refer to which colour will be the next to make a state change.
+--
 -- There are a few things to keep track of, each with their bit requirements.
 --
--- 1. Who's ply is it anyway? We'll use 0 for white and 1 for black. (1 bit)
+-- 1. Who's turn is it anyway? We'll use 0 for white and 1 for black. (1 bit)
 -- 2. Which castling options remain open? We'll use 1 bit for each corner.
 --    (4 bits)
 -- 3. Fifty move rule status, so a number between 0 and 50. We'll need to mask
 --    and shift to recover or set. (6 bits)
--- 4. En Passant coordinate, if any. There are only 16 possible values,
+-- 4. En passant coordinate, if any. There are only 16 possible values,
 --    but we need another flag to represent a non-option. Again, this is a
 --    number we'll need to mask and shift to recover.(4+1 bits)
 --
@@ -24,19 +32,19 @@
 --
 -- We'll be using the following bitmask.
 --
---  > e = en Passant coord encoding
---  > E = Is there an en Passant coord in the `e` bits?
---  > W = White Kingside calste
---  > w = White Queenside castle
---  > B = Black Kingside castle
---  > b = Black Queenside castle
---  > t = Who's ply is it?
---  > f = Fifty move rule status
---  >
---  >  F E D C B A 9 8   7 6 5 4 3 2 1 0
---  > +---------------+ +---------------+
---  > |f|f|f|f|f|f|b|B| |w|W|t|E|e|e|e|e|
---  > +---------------+ +---------------+
+-- > e = En passant coord encoding
+-- > E = Is there an en Passant coord in the `e` bits?
+-- > W = White kingside castle
+-- > w = White queenside castle
+-- > B = Black kingside castle
+-- > b = Black queenside castle
+-- > t = Who's ply is it?
+-- > f = Fifty move rule status
+-- >
+-- >  F E D C B A 9 8   7 6 5 4 3 2 1 0
+-- > +---------------+ +---------------+
+-- > |f|f|f|f|f|f|b|B| |w|W|t|E|e|e|e|e|
+-- > +---------------+ +---------------+
 --
 -- Since we're using a single `Word16` for our flags, we're going to keep the
 -- the implementation completely strict, to save memory.
@@ -84,16 +92,16 @@ type Status = Word16
 -- | A `Game` is a chess board as well as all the supplementary information
 -- about the game, such as:
 --
--- 1. which colour's ply comes next.
--- 2. the remaining castling options.
--- 3. fifty move rule status.
--- 4. en Passant status.
+-- 1. Which colour's ply comes next
+-- 2. The remaining castling options
+-- 3. Fifty move rule status
+-- 4. En passant status
 data Game = Game !Board.Board !Status
   deriving (Show, Eq)
 
--- | `FiftyMoveException`s are thrown when an invalid fifty move rule state state
--- would be created, either becuase the number of moves is over 50 and the game
--- must have drawn, or becuase a negative value was set.
+-- | `FiftyMoveException`s are thrown when an invalid 50 move rule state
+-- would be created, either because the number of moves is over 50 and the game
+-- must have drawn, or because a negative value was set.
 data FiftyMoveException
   = TooLowException Int
   | TooHighException Int
@@ -106,7 +114,7 @@ instance Show FiftyMoveException where
 instance Exception FiftyMoveException
 
 -- | `EnPassantException` is thrown when an invalid coordinate is set. En
--- Passant moves can only happen on the 3rd and 6th rank.
+-- passant moves can only happen on the third and sixth rank.
 data EnPassantException = EnPassantException Coord
   deriving (Typeable, Eq)
 
@@ -115,12 +123,12 @@ instance Show EnPassantException where
 
 instance Exception EnPassantException
 
--- | An empty game, with a blank board, White's turn, no castle options, zero on
--- the fifty move clock, and no en Passant square.
+-- | An empty game, with a blank board, white's turn, no castle options, zero on
+-- the fifty move clock, and no en passant square.
 empty :: Game
 empty = Game Board.empty 0
 
--- | A board with the typical starting positioins for chess.
+-- | A board with the typical starting positions for chess.
 starting :: Game
 starting = Game Board.starting 0b0000001111000000
 
@@ -132,7 +140,8 @@ board (Game b _) = b
 setBoard :: Game -> Board.Board -> Game
 setBoard (Game _ s) b = Game b s
 
--- | Who's turn is it?
+-- | Who's turn is it? What is the colour of the player who next gets to change
+-- the board?
 turn :: Game -> Colour
 turn (Game _ s) = if testBit s 0xA then Black else White
 
@@ -141,7 +150,7 @@ setTurn :: Game -> Colour -> Game
 setTurn (Game b s) c = Game b s'
   where s' = (if c == Black then setBit else clearBit) s 0xA
 
--- | The bit indicies used for the different castle options.
+-- | The bit indices used for the different castle options.
 castleIndex :: Colour -> Side -> Int
 castleIndex White Kingside  = 0x6
 castleIndex White Queenside = 0x7
@@ -172,15 +181,15 @@ setCastlingOptions (Game b s) enabled = Game b s'
 -- they're numbers. So we need to mask them out, shift them to the LSB, and
 -- convert them to a proper `Int`.
 
--- | The bits used by the fifty move rule tracking.
+-- | The bits used by the 50 move rule tracking.
 fiftyMoveBits :: Word16
 fiftyMoveBits = 0b1111110000000000
 
--- | The fifty move rule status of the game.
+-- | The 50 move rule status of the game.
 fiftyMoveStatus :: Game -> Int
 fiftyMoveStatus (Game _ s) = fromIntegral $ shiftR (s .&. fiftyMoveBits) 10
 
--- | Set the fifty move rule status of the game. This will throw if the number
+-- | Set the 50 move rule status of the game. This will throw if the number
 -- isn't in the range @[0..50]@.
 setFiftyMoveStatus :: Game -> Int -> Game
 setFiftyMoveStatus (Game b s) n
@@ -194,7 +203,7 @@ setFiftyMoveStatus (Game b s) n
 enPassantBits :: Word16
 enPassantBits = 0b0000000000011111
 
--- | All the coords that en Passant moves can be placed on. Note that the order
+-- | All the coords that en passant moves can be placed on. Note that the order
 -- doesn't matter, since this list is used for both setting and getting the
 -- values.
 enPassantCoords :: [Coord]
