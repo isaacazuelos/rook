@@ -9,9 +9,17 @@
 -- This is our game representation. It's a `Board.Board` paired with some bits
 -- to encode other status flags.
 --
+-- A quick note on terminology, in chess there are two players assigned the
+-- colours white and black who alternate (starting with white) changeing the
+-- state of the board according to the rules. The problem here is that these
+-- board state changes are called many different things in different contexts.
+-- I'm going to call these a ply. Two plys (one by white then one by black) are
+-- move, sometimes called a full move. A half move is a ply. Turn is used to
+-- refer to which colour will be the next to make a state change.
+--
 -- There are a few things to keep track of, each with their bit requirements.
 --
--- 1. Who's ply is it anyway? We'll use 0 for white and 1 for black. (1 bit)
+-- 1. Who's turn is it anyway? We'll use 0 for white and 1 for black. (1 bit)
 -- 2. Which castling options remain open? We'll use 1 bit for each corner.
 --    (4 bits)
 -- 3. Fifty move rule status, so a number between 0 and 50. We'll need to mask
@@ -24,19 +32,19 @@
 --
 -- We'll be using the following bitmask.
 --
---  > e = En passant coord encoding
---  > E = Is there an en Passant coord in the `e` bits?
---  > W = White kingside castle
---  > w = White queenside castle
---  > B = Black kingside castle
---  > b = Black queenside castle
---  > t = Who's ply is it?
---  > f = Fifty move rule status
---  >
---  >  F E D C B A 9 8   7 6 5 4 3 2 1 0
---  > +---------------+ +---------------+
---  > |f|f|f|f|f|f|b|B| |w|W|t|E|e|e|e|e|
---  > +---------------+ +---------------+
+-- > e = En passant coord encoding
+-- > E = Is there an en Passant coord in the `e` bits?
+-- > W = White kingside castle
+-- > w = White queenside castle
+-- > B = Black kingside castle
+-- > b = Black queenside castle
+-- > t = Who's ply is it?
+-- > f = Fifty move rule status
+-- >
+-- >  F E D C B A 9 8   7 6 5 4 3 2 1 0
+-- > +---------------+ +---------------+
+-- > |f|f|f|f|f|f|b|B| |w|W|t|E|e|e|e|e|
+-- > +---------------+ +---------------+
 --
 -- Since we're using a single `Word16` for our flags, we're going to keep the
 -- the implementation completely strict, to save memory.
@@ -132,7 +140,8 @@ board (Game b _) = b
 setBoard :: Game -> Board.Board -> Game
 setBoard (Game _ s) b = Game b s
 
--- | Who's turn is it?
+-- | Who's turn is it? What is the colour of the player who next gets to change
+-- the board?
 turn :: Game -> Colour
 turn (Game _ s) = if testBit s 0xA then Black else White
 

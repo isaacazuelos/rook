@@ -48,7 +48,7 @@ spec = do
       Game.board (Game.setBoard Game.empty Board.starting) `shouldBe` Board.starting
 
   describe "turn" $
-    it "should be the player's turn " $
+    it "should be the player that goes next " $
       Game.turn (Game.setTurn Game.empty Black) `shouldBe` Black
 
   describe "castlingOption" $ do
