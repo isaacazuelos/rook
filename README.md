@@ -2,6 +2,8 @@
 
 A chess game for human players.
 
+This is a for-fun project I've been slowly picking away at since 2014. 
+
 ## What it will do
 
 The goal is to allow for two human players to play a game of chess in full
