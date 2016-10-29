@@ -38,3 +38,9 @@ spec = do
         let board2 = Board.set board1      Black Rook m
         Board.get board2 White Pawn `shouldBe` Mask.empty
         Board.get board2 Black Rook `shouldBe` m
+  describe "at" $ do
+    it "should return nothing on empty boards" $
+      Board.at Board.empty a1 `shouldBe` Nothing
+    it "should return the piece and colour correctly" $ do
+      Board.at Board.starting a2 `shouldBe` Just (White, Pawn)
+      Board.at Board.starting h8 `shouldBe` Just (Black, Rook)

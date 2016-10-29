@@ -19,6 +19,7 @@ module Game.Rook.Board
     , starting
     , get
     , set
+    , at
     )
   where
 
@@ -101,3 +102,7 @@ set b c p m = case p of
     updatedMaterial = case c of
       White -> blanked { white = white blanked `Mask.union` m}
       Black -> blanked { black = black blanked `Mask.union` m}
+
+-- | Return what's at a coord.
+at :: Board -> Coord -> Maybe (Colour, Piece)
+at = undefined 
