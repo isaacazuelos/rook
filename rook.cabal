@@ -16,6 +16,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Game.Rook.Coord
                      , Game.Rook.Mask
+                     , Game.Rook.Movement.Basic
                      , Game.Rook.Piece
                      , Game.Rook.Board
                      , Game.Rook.Game
