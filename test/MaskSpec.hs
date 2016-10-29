@@ -45,6 +45,11 @@ spec = do
       Mask.full `shouldBe` Mask.fromCoords Coord.allCoords
       Mask.full `shouldBe` Mask.fromWord maxBound
 
+  describe "isSet" $
+    it "should be True when the coord is set" $ do
+      Mask.isSet Mask.full Coord.a1 `shouldBe` True
+      Mask.isSet Mask.empty Coord.a1 `shouldBe` False
+
   describe "intersection" $ do
     it "should treat empty like a zero" $
       property (\m -> Mask.intersection Mask.empty m `shouldBe` Mask.empty)

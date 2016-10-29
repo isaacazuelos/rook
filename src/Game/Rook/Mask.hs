@@ -16,6 +16,7 @@ module Game.Rook.Mask
     , fromCoords
     , toCoords
     -- * Operations
+    , isSet
     , intersection
     , union
     , remove
@@ -96,3 +97,7 @@ remove (Mask a) (Mask b) = Mask (a .&. complement b)
 -- >        1 0 1   0 1 0
 invert :: Mask -> Mask
 invert (Mask m) = Mask (complement m)
+
+-- | Is a `Coord.Coord` set on a `Mask`?
+isSet :: Mask -> Coord.Coord -> Bool
+isSet (Mask w) c = 0 /= (w .&. Coord.toWord c)
