@@ -105,4 +105,12 @@ set b c p m = case p of
 
 -- | Return what's at a coord.
 at :: Board -> Coord -> Maybe (Colour, Piece)
-at = undefined 
+at b c = maybeFromList $ do
+    k <- [White, Black]
+    p <- [Pawn, Rook, Bishop, Knight, Queen, King]
+    if get b k p `Mask.isSet` c
+      then return (k, p)
+      else mempty
+  where
+    maybeFromList []    = Nothing
+    maybeFromList (x:_) = Just x
