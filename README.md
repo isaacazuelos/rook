@@ -2,6 +2,8 @@
 
 A chess game for human players.
 
+I got bored and stopped working on it. This is **abandoned**.
+
 ## What it will do
 
 The goal is to allow for two human players to play a game of chess in full
